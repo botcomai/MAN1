@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profit Matrix | Data4Ghana</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/master-dashboard.css">
+    <link rel="stylesheet" href="css/profit-calculator.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/supabase.js"></script>
+    <!-- Chart.js for bar chart visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calc-header">
+            <a href="master-dashboard.html" class="back-btn">← Back to Master Dashboard</a>
+            <h1>Profit & Revenue Matrix</h1>
+            <p>Select a network, enter your API costs per bundle, add custom rows, then run a full profitability analysis.</p>
+        </div>
+
+        <!-- Network Selector Tabs -->
+        <div class="network-tabs" id="networkTabs">
+            <button class="net-tab" onclick="selectNetwork('data_mtn')" id="tab_data_mtn">
+                <span class="net-icon">🟡</span> MTN
+            </button>
+            <button class="net-tab" onclick="selectNetwork('data_tigo')" id="tab_data_tigo">
+                <span class="net-icon">📶</span> AT/Ishare
+            </button>
+            <button class="net-tab" onclick="selectNetwork('data_telecel')" id="tab_data_telecel">
+                <span class="net-icon">🔴</span> Telecel
+            </button>
+            <button class="net-tab" onclick="selectNetwork('data_bigtime')" id="tab_data_bigtime">
+                <span class="net-icon">⚡</span> AT Bigtime
+            </button>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+            <div class="empty-icon">📊</div>
+            <h2>Select a Network Above</h2>
+            <p>Choose a network to load its data bundles and start entering your API costs.</p>
+        </div>
+
+        <!-- Data Table Panel (hidden until network selected) -->
+        <div id="profitTableWrapper" style="display:none;">
+            <div class="calc-panel" style="padding:0; overflow:hidden; margin-bottom:20px;">
+                <div style="padding:20px 24px; display:flex; justify-content:space-between; align-items:center;">
+                    <h3 id="netHeading" style="margin:0; font-size:15px; text-transform:uppercase; letter-spacing:1px;">Bundles</h3>
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn add-btn" onclick="addCustomRow()">+ Add Bundle</button>
+                        <button class="action-btn run-btn" onclick="runAnalysis()">📊 Run Analysis</button>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="data-table" style="margin:0; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Bundle</th>
+                                <th>Plan</th>
+                                <th>API Cost (₵)</th>
+                                <th>Client<br><small>Sell Price</small></th>
+                                <th>VIP<br><small>Sell Price</small></th>
+                                <th>Elite<br><small>Sell Price</small></th>
+                                <th>Super Agent<br><small>Sell Price</small></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="profitTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYSIS RESULTS (hidden until user clicks Run Analysis) -->
+        <div id="analysisPanel" style="display:none;">
+            <div class="calc-panel analysis-panel">
+                <h3 style="margin-top:0; font-size:15px; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:14px;">
+                    📊 Profitability Analysis
+                </h3>
+
+                <!-- Best margin -->
+                <div id="analysisBestRow"></div>
+
+                <!-- Analysis summary cards-->
+                <div class="analysis-grid" id="analysisGrid"></div>
+
+                <!-- Grand Total -->
+                <div id="grandTotalCard" style="display:none; margin-top:16px;"></div>
+
+                <!-- Charts -->
+                <h4 style="margin:24px 0 12px; font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Profit Chart — Net Profit per Bundle by Tier</h4>
+                <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:24px; margin-bottom:24px;">
+                    <canvas id="profitChart" height="280"></canvas>
+                </div>
+
+                <!-- Detailed breakdown table -->
+                <h4 style="margin:24px 0 12px; font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Full Breakdown</h4>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="analysisTable" style="margin:0; width:100%;"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/profit-calculator.js"></script>
+</body>
+</html>
